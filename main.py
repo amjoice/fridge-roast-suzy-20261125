@@ -19,14 +19,24 @@ LINE = (
     "it's no longer a warning, it's the longest relationship in my kitchen."
 )
 
+
+def check_line(text: str) -> str:
+    """Enforce the bounty gate: one line, 1-200 chars, not only whitespace."""
+    cleaned = text.strip()
+    if "\n" in cleaned or "\r" in cleaned:
+        raise ValueError("entry must be a single line")
+    if not 1 <= len(cleaned) <= 200:
+        raise ValueError(f"line is {len(cleaned)} chars, must be 1-200")
+    if not cleaned:
+        raise ValueError("line must not be only whitespace")
+    return cleaned
+
+
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "/output")
 
 
 def main() -> None:
-    text = LINE.strip()
-    assert "\n" not in text, "entry must be a single line"
-    assert 1 <= len(text) <= 200, f"line is {len(text)} chars, must be 1-200"
-    assert text.strip(), "line must not be only whitespace"
+    text = check_line(LINE)
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     path = os.path.join(OUTPUT_DIR, "entry.txt")
     with open(path, "w", encoding="utf-8") as f:
